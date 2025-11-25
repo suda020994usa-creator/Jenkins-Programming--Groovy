@@ -1,0 +1,48 @@
+pipeline
+{
+Agent any 
+    {
+     stages
+        {   
+       stage('Checkout')
+        {
+           steps 
+             {git branch :name , url : https://www.natwest.com/repo.git }
+
+        }
+       
+        stage('Build')
+         {
+
+         steps{ sh mvn clean install }
+
+         }
+
+         stage('Test')
+        {
+           steps
+           {
+            sh mvn test
+         
+           } 
+         }
+         stage ('SonarCode Quality')
+            {
+                steps
+            { sh mvn sonar:sonar}
+          
+         stage ('Publish HTML Report')
+           {
+                 
+           steps { junit target/surefire-htmlreport/*.xml
+              publishHtml (
+
+                      includeall : True ,
+                       allow missing
+                      Reportdir: target/surefire-htmlreport
+                      ReportFile : index.html 
+                      ReportName : random(test Report )}
+            }
+           }
+         }
+            
