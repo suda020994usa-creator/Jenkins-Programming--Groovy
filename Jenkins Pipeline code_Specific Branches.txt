@@ -1,0 +1,20 @@
+pipeline
+{
+stages
+{
+stage ('Build')
+{
+when
+{
+anyof
+{
+  branch :qa
+  branch : dev
+}
+{Steps : sh mv clean install }
+
+}
+}
+}
+
+       
