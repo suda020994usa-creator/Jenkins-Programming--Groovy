@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'BRANCH', defaultValue: 'develop', description: 'Branch to build')
+        choice(name: 'ENV', choices: ['DEV', 'UAT', 'PROD'], description: 'Environment to deploy')
+        booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'Execute tests?')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: params.BRANCH, url: 'https://github.com/myrepo.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo "Building for environment: ${params.ENV}"
+                sh "mvn clean install -DskipTests"
+            }
+        }
+
+        stage('Run Tests') {
+            when { expression { return params.RUN_TESTS } }
+            steps {
+                sh "mvn test"
+            }
+        }
+    }
+}
